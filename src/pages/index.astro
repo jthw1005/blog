@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Card from '../components/Card.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getNotionPosts } from '../lib/notion';
+
+const posts = await getNotionPosts();
+const recentPosts = posts.slice(0, 6);
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <section class="max-w-5xl mx-auto px-4 py-16">
+    <header class="mb-16">
+      <h1 class="hero-title mb-4 slide-in" style="--delay: 0s;">
+        <span>WEBLOG</span>
+      </h1>
+      <h3 class="mb-4 slide-in" style="--delay: 0.1s;">
+        by Hwang Juntae
+      </h3>
+      <p class="text-xl md:text-2xl text-(--color-muted) mb-8 slide-in" style="font-family: var(--font-body); --delay: 0.2s;">
+        <span id="typewriter" data-text="Think Less. Build Constantly. Integrate Feedbacks."></span>
+        <span class="cursor">|</span>
+      </p>
+      
+      <div class="flex gap-4 slide-in" style="--delay: 0.3s;">
+        <a href="/blog" class="btn-green hover:translate-x-[2px] hover:translate-y-[2px] shadow-(--shadow-brutal) hover:shadow-(--shadow-brutal-md)">
+          READ BLOG →
+        </a>
+
+        <a href="/about" class="btn-blue hover:translate-x-[2px] hover:translate-y-[2px] shadow-(--shadow-brutal) hover:shadow-(--shadow-brutal-md)">
+          ABOUT ME →
+        </a>
+      </div>
+    </header>
+    
+    <hr class="border-t-2 border-(--color-border) mb-12" />
+    
+    <div class="mb-20">
+      <h2 class="section-title mb-8">
+        LATEST DROPS
+      </h2>
+      
+      {recentPosts.length > 0 ? (
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recentPosts.slice(0, 3).map((post, index) => (
+            <div class="slide-up" style={`--delay: ${index * 0.1}s`}>
+              <Card 
+                title={post.title}
+                description={post.description}
+                pubDate={post.pubDate}
+                slug={post.slug}
+                tags={post.tags}
+                cover={post.cover}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="border-2 border-[var(--color-border)] p-8 text-center">
+          <p class="text-[var(--color-muted)] mb-4">
+            아직 작성된 글이 없습니다.
+          </p>
+          <p class="text-sm">
+            Notion 데이터베이스에 글을 작성하면 여기에 표시됩니다.
+          </p>
+        </div>
+      )}
+    </div>
+
+    <hr class="border-t-2 border-(--color-border) mb-12" />
+    
+    <div class="mb-20">
+      <h2 class="section-title mb-8">
+        POPULAR POSTS
+      </h2>
+      
+      {recentPosts.length > 0 ? (
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recentPosts.slice(0, 3).map((post, index) => (
+            <div class="slide-up" style={`--delay: ${index * 0.1}s`}>
+              <Card 
+                title={post.title}
+                description={post.description}
+                pubDate={post.pubDate}
+                slug={post.slug}
+                tags={post.tags}
+                cover={post.cover}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="border-2 border-[var(--color-border)] p-8 text-center">
+          <p class="text-[var(--color-muted)] mb-4">
+            아직 작성된 글이 없습니다.
+          </p>
+          <p class="text-sm">
+            Notion 데이터베이스에 글을 작성하면 여기에 표시됩니다.
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 12vw, 7rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .btn-green {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    background-color: #a3e535;
+    color: #000;
+    border: 2px solid var(--color-brutal-black);
+    transition: all 0.1s;
+    text-decoration: none;
+  }
+
+  .btn-green:hover {
+    background-color: var(--color-brutal-white);
+    color: var(--color-brutal-black);
+  }
+
+  .btn-blue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    background-color: #61a5f9;
+    color: #000;
+    border: 2px solid var(--color-brutal-black);
+    transition: all 0.1s;
+    text-decoration: none;
+  }
+
+  .btn-blue:hover {
+    background-color: var(--color-brutal-white);
+    color: var(--color-brutal-black);
+  }
+
+  .cursor {
+    display: inline-block;
+    color: var(--color-neon-orange);
+    animation: blink 1s steps(1) 5, disappear 0s forwards 5.5s;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  @keyframes disappear {
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  .slide-in {
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideIn 0.6s ease-out forwards;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUp 0.5s ease-out forwards;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes slideUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  function typeWriter() {
+    const element = document.getElementById('typewriter');
+    if (!element) return;
+    
+    const text = element.getAttribute('data-text') || '';
+    const el = element;
+    let index = 0;
+    el.textContent = '';
+    
+    function type() {
+      if (index < text.length) {
+        el.textContent += text.charAt(index);
+        index++;
+        setTimeout(type, 50);
+      }
+    }
+    
+    type();
+  }
+
+  // 페이지 로드 시 실행
+  typeWriter();
+  
+  // Astro View Transitions 지원
+  document.addEventListener('astro:page-load', typeWriter);
+</script>

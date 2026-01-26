@@ -1,0 +1,37 @@
+---
+interface Props {
+  tag: string;
+  href?: string;
+  size?: 'sm' | 'md';
+}
+
+const { tag, href, size = 'md' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'px-2 py-1 text-xs',
+  md: 'px-3 py-1.5 text-sm',
+};
+---
+
+{href ? (
+  <a
+    href={href}
+    class:list={[
+      'inline-block font-semibold bg-[var(--color-neon-pink)] text-[var(--color-brutal-black)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all no-underline',
+      sizeClasses[size]
+    ]}
+    style="font-family: var(--font-display);"
+  >
+    #{tag}
+  </a>
+) : (
+  <span
+    class:list={[
+      'inline-block font-semibold bg-[var(--color-neon-pink)] text-[var(--color-brutal-black)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]',
+      sizeClasses[size]
+    ]}
+    style="font-family: var(--font-display);"
+  >
+    #{tag}
+  </span>
+)}

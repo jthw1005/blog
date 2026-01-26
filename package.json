@@ -1,0 +1,26 @@
+{
+  "name": "dev-blog",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/rss": "^4.0.15",
+    "@astrojs/sitemap": "^3.7.0",
+    "@notionhq/client": "^5.8.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.15",
+    "marked": "^17.0.1",
+    "notion-to-md": "^3.1.9",
+    "sharp": "^0.34.3",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10"
+  }
+}

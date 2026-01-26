@@ -1,0 +1,19 @@
+---
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+
+const wordsPerMinute = 200;
+const words = content.trim().split(/\s+/).length;
+const minutes = Math.ceil(words / wordsPerMinute);
+---
+
+<span class="inline-flex items-center gap-1 text-sm text-[var(--color-muted)]">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polyline points="12 6 12 12 16 14"></polyline>
+  </svg>
+  {minutes}분 읽기
+</span>

@@ -1,0 +1,46 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+import { getNotionPosts } from '../../lib/notion';
+
+export async function getStaticPaths() {
+  const posts = await getNotionPosts();
+  
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+// HTML에서 h2, h3 헤딩 추출
+function extractHeadings(html: string) {
+  const headings: Array<{ depth: number; slug: string; text: string }> = [];
+  const regex = /<h([23])[^>]*id="([^"]*)"[^>]*>(.+?)<\/h\1>/g;
+  
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    const depth = parseInt(match[1]);
+    const slug = match[2];
+    // HTML 태그 제거하고 텍스트만 추출
+    const text = match[3].replace(/<[^>]*>/g, '');
+    headings.push({ depth, slug, text });
+  }
+  
+  return headings;
+}
+
+const headings = extractHeadings(post.content);
+---
+
+<BlogPost
+  title={post.title}
+  description={post.description}
+  pubDate={post.pubDate}
+  updatedDate={post.updatedDate}
+  tags={post.tags}
+  content={post.content}
+  headings={headings}
+>
+  <Fragment set:html={post.content} />
+</BlogPost>

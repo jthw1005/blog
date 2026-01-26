@@ -1,0 +1,133 @@
+---
+
+---
+
+<div class="search-container relative">
+  <button
+    id="search-btn"
+    class="p-2 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+    aria-label="검색"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.3-4.3"></path>
+    </svg>
+  </button>
+  
+  <div 
+    id="search-modal"
+    class="hidden fixed inset-0 z-[100] bg-black/50 items-center justify-center p-4"
+  >
+    <div class="w-full max-w-xl bg-[var(--color-background)] border-4 border-[var(--color-border)] shadow-[8px_8px_0px_0px_var(--color-border)] p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold" style="font-family: var(--font-display);">검색</h2>
+        <button 
+          id="close-search"
+          class="p-2 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          aria-label="닫기"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <input
+        id="search-input"
+        type="text"
+        placeholder="검색어를 입력하세요..."
+        class="input-brutal mb-4"
+      />
+      
+      <div id="search-results" class="max-h-[60vh] overflow-y-auto space-y-2">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const searchBtn = document.getElementById('search-btn');
+  const searchModal = document.getElementById('search-modal');
+  const closeSearch = document.getElementById('close-search');
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const searchResults = document.getElementById('search-results');
+
+  let posts: Array<{ title: string; description: string; slug: string }> = [];
+
+  async function loadPosts() {
+    try {
+      const response = await fetch('/api/search.json');
+      posts = await response.json();
+    } catch (error) {
+      console.error('Failed to load posts:', error);
+    }
+  }
+
+  function openModal() {
+    searchModal?.classList.remove('hidden');
+    searchModal?.classList.add('flex');
+    searchInput?.focus();
+    loadPosts();
+  }
+
+  function closeModal() {
+    searchModal?.classList.add('hidden');
+    searchModal?.classList.remove('flex');
+    if (searchInput) searchInput.value = '';
+    if (searchResults) searchResults.innerHTML = '';
+  }
+
+  function search(query: string) {
+    if (!searchResults) return;
+    
+    if (!query.trim()) {
+      searchResults.innerHTML = '';
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const filtered = posts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(lowerQuery) ||
+        post.description.toLowerCase().includes(lowerQuery)
+    );
+
+    if (filtered.length === 0) {
+      searchResults.innerHTML = `
+        <p class="text-center text-[var(--color-muted)] py-8">
+          검색 결과가 없습니다.
+        </p>
+      `;
+      return;
+    }
+
+    searchResults.innerHTML = filtered
+      .map(
+        (post) => `
+        <a href="/blog/${post.slug}" class="block p-4 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all no-underline">
+          <h3 class="font-bold mb-1" style="font-family: var(--font-display);">${post.title}</h3>
+          <p class="text-sm text-[var(--color-muted)] line-clamp-1">${post.description}</p>
+        </a>
+      `
+      )
+      .join('');
+  }
+
+  searchBtn?.addEventListener('click', openModal);
+  closeSearch?.addEventListener('click', closeModal);
+  searchModal?.addEventListener('click', (e) => {
+    if (e.target === searchModal) closeModal();
+  });
+  searchInput?.addEventListener('input', (e) => {
+    search((e.target as HTMLInputElement).value);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      openModal();
+    }
+  });
+</script>

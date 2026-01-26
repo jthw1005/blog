@@ -1,0 +1,132 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+  <nav class="toc border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] p-4 mb-8 bg-[var(--color-background)]">
+    <h2 
+      class="text-lg font-bold mb-3 pb-2 border-b-2 border-[var(--color-border)]"
+      style="font-family: var(--font-display);"
+    >
+      목차
+    </h2>
+    <ul class="toc-list space-y-2">
+      {filteredHeadings.map((heading) => (
+        <li 
+          class:list={[
+            heading.depth === 3 && 'ml-4'
+          ]}
+        >
+          <a 
+            href={`#${heading.slug}`}
+            data-slug={heading.slug}
+            class="toc-link text-sm hover:text-[var(--color-neon-orange)] transition-all no-underline"
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .toc-link {
+    display: block;
+    padding: 0.25rem 0.5rem;
+    border-left: 3px solid transparent;
+    margin-left: -0.5rem;
+  }
+
+  .toc-link.active {
+    border-left-color: var(--color-neon-orange);
+    background-color: var(--color-neon-orange);
+    color: var(--color-brutal-black);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  function initTocHighlight() {
+    const tocLinks = document.querySelectorAll('.toc-link');
+    if (tocLinks.length === 0) return;
+
+    const headingElements: HTMLElement[] = [];
+    tocLinks.forEach((link) => {
+      const slug = link.getAttribute('data-slug');
+      if (slug) {
+        const heading = document.getElementById(slug);
+        if (heading) headingElements.push(heading);
+      }
+    });
+
+    if (headingElements.length === 0) return;
+
+    function highlightCurrentHeading() {
+      // 현재 스크롤 위치 (상단에서 약간의 여유 추가)
+      const scrollTop = window.scrollY;
+      
+      // 현재 위치보다 위에 있는 헤딩 중 가장 아래에 있는 것 찾기
+      let currentHeading: HTMLElement | null = null;
+      
+      for (const heading of headingElements) {
+        if (heading.offsetTop <= scrollTop) {
+          currentHeading = heading;
+        } else {
+          break;
+        }
+      }
+      
+      // 아무것도 없으면 첫 번째 헤딩 선택
+      if (!currentHeading && headingElements.length > 0) {
+        currentHeading = headingElements[0];
+      }
+      
+      // 모든 링크에서 active 제거
+      tocLinks.forEach((link) => link.classList.remove('active'));
+      
+      // 현재 헤딩에 해당하는 링크에 active 추가
+      if (currentHeading) {
+        const activeLink = document.querySelector(
+          `.toc-link[data-slug="${currentHeading.id}"]`
+        );
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      }
+    }
+
+    // 스크롤 이벤트에 throttle 적용
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          highlightCurrentHeading();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // 초기 하이라이트
+    highlightCurrentHeading();
+  }
+
+  // 페이지 로드 시 실행
+  initTocHighlight();
+  
+  // Astro View Transitions 지원
+  document.addEventListener('astro:page-load', initTocHighlight);
+</script>

@@ -1,0 +1,112 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  slug: string;
+  tags?: string[];
+  cover?: string | null;
+  accentColor?: string;
+}
+
+const { title, description, pubDate, slug, cover, accentColor } = Astro.props;
+
+const accentColors = ['#fa8cef', '#00ff84', '#A6FAFF', '#FFEB3B', '#A8A6FF', '#FF6B35'];
+const randomAccent = accentColor || accentColors[Math.floor(Math.random() * accentColors.length)];
+
+const formattedDate = pubDate.toISOString().split('T')[0];
+---
+
+<article class="card-neo group relative overflow-hidden">
+  <a href={`/blog/${slug}`} class="block no-underline hover:bg-transparent">
+    {cover ? (
+      <div class="relative aspect-[16/9] overflow-hidden border-b-2 border-[var(--color-border)]">
+        <img 
+          src={cover} 
+          alt={title}
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+        <span class="date-badge absolute top-3 left-3">
+          {formattedDate}
+        </span>
+        <div class="absolute top-0 right-0 w-10 h-10 border-l-2 border-b-2 border-[var(--color-border)]" style={`background-color: ${randomAccent}`}></div>
+      </div>
+    ) : (
+      <div class="relative">
+        <div class="absolute top-0 right-0 w-10 h-10 border-l-2 border-b-2 border-[var(--color-border)]" style={`background-color: ${randomAccent}`}></div>
+      </div>
+    )}
+    
+    <div class={`flex flex-col gap-3 p-5 ${cover ? '' : 'pr-12 pt-6'}`}>
+      {!cover && (
+        <span class="date-badge self-start">
+          {formattedDate}
+        </span>
+      )}
+      
+      <h3 class="text-lg font-bold uppercase tracking-tight leading-tight" style="font-family: var(--font-display);">
+        {title}
+      </h3>
+      
+      <p class="text-[var(--color-muted)] text-sm leading-relaxed line-clamp-2">
+        {description}
+      </p>
+      
+      <span class="read-more mt-1">
+        Read more →
+      </span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card-neo {
+    background-color: var(--color-background);
+    border: 2px solid var(--color-border);
+    transition: all 0.15s ease;
+    box-shadow: 4px 4px 0px 0px var(--color-border);
+  }
+
+  .card-neo:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px var(--color-border);
+  }
+
+  .card-neo img {
+    border: none;
+    box-shadow: none;
+    margin: 0;
+  }
+
+  .date-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: var(--color-brutal-black);
+    color: var(--color-brutal-white);
+  }
+
+  :global(.dark) .date-badge {
+    background-color: var(--color-brutal-white);
+    color: var(--color-brutal-black);
+  }
+
+  .read-more {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

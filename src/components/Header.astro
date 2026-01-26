@@ -1,0 +1,101 @@
+---
+import { SITE_TITLE } from '../consts';
+import Search from './Search.astro';
+// import ThemeToggle from './ThemeToggle.astro';
+
+const pathname = new URL(Astro.request.url).pathname;
+const currentPath = pathname.slice(1);
+
+const navItems = [
+  { href: '/', label: '홈' },
+  { href: '/blog', label: '블로그' },
+  { href: '/about', label: '소개' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-[#fffaeb] border-b-[3px] border-[var(--color-border)]">
+  <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <a 
+      href="/" 
+      class="font-bold text-2xl no-underline px-2 py-1 transition-all"
+      style="font-family: var(--font-display);"
+    >
+      {SITE_TITLE}
+    </a>
+    
+    <div class="flex items-center gap-2">
+      <ul class="hidden md:flex items-center gap-1">
+        {navItems.map((item) => {
+          const isActive = currentPath === item.href.slice(1) || 
+                          (item.href === '/blog' && currentPath.startsWith('blog'));
+          return (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  'px-4 py-2 font-semibold no-underline border-2 border-transparent transition-all',
+                  isActive 
+                    ? 'bg-[var(--color-neon-cyan)] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]' 
+                    : 'hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]'
+                ]}
+                style="font-family: var(--font-display);"
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      
+      <Search />
+      
+      <button 
+        id="mobile-menu-btn"
+        class="md:hidden p-2 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+        aria-label="메뉴 열기"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </nav>
+  
+  <div 
+    id="mobile-menu" 
+    class="hidden md:hidden border-t-2 border-[var(--color-border)] bg-[var(--color-background)]"
+  >
+    <ul class="flex flex-col p-4 gap-2">
+      {navItems.map((item) => {
+        const isActive = currentPath === item.href.slice(1);
+        return (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'block px-4 py-3 font-semibold no-underline border-2 border-[var(--color-border)] transition-all',
+                isActive 
+                  ? 'bg-[var(--color-neon-cyan)] shadow-[4px_4px_0px_0px_var(--color-border)]' 
+                  : 'hover:bg-[var(--color-neon-lime)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:shadow-none hover:translate-x-1 hover:translate-y-1'
+              ]}
+              style="font-family: var(--font-display);"
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  
+  menuBtn?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+</script>

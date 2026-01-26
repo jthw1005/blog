@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Card from '../../components/Card.astro';
+// import Search from '../../components/Search.astro';
+import { SITE_TITLE } from '../../consts';
+import { getNotionPosts } from '../../lib/notion';
+
+const posts = await getNotionPosts();
+---
+
+<BaseLayout title={SITE_TITLE} description="모든 블로그 글 목록">
+  <section class="max-w-5xl mx-auto px-4 py-12">
+    <a 
+    href="/" 
+    class="back-button inline-flex items-center gap-2 no-underline hover:bg-transparent"
+    >
+    <span>←</span>
+    <span>BACK</span>
+  </a>
+
+  <div class="mb-8" />
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+      <h1 class="page-title">
+        ALL POSTS
+      </h1>
+      <!-- <Search /> -->
+    </div>
+    
+    {posts.length > 0 ? (
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((post, index) => (
+          <div class="slide-up" style={`--delay: ${index * 0.1}s`}>
+            <Card 
+              title={post.title}
+              description={post.description}
+              pubDate={post.pubDate}
+              slug={post.slug}
+              tags={post.tags}
+              cover={post.cover}
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="border-2 border-[var(--color-border)] p-12 text-center">
+        <h2 class="text-2xl font-bold mb-4 uppercase" style="font-family: var(--font-display);">
+          No posts yet
+        </h2>
+        <p class="text-[var(--color-muted)] mb-6">
+          Notion 데이터베이스에 글을 작성하면 여기에 표시됩니다.
+        </p>
+        <div class="border-2 border-[var(--color-border)] bg-[var(--color-brutal-gray-light)] dark:bg-[#1a1a1a] p-4 text-left max-w-md mx-auto">
+          <p class="font-semibold mb-2" style="font-family: var(--font-display);">
+            Notion 데이터베이스 필수 속성:
+          </p>
+          <ul class="text-sm space-y-1">
+            <li>• <strong>Title</strong> (title): 글 제목</li>
+            <li>• <strong>Slug</strong> (text): URL 슬러그</li>
+            <li>• <strong>Summary</strong> (text): 글 설명</li>
+            <li>• <strong>PublishedAt</strong> (date): 작성일</li>
+            <li>• <strong>Tags</strong> (multi-select): 태그</li>
+            <li>• <strong>Published</strong> (checkbox): 공개 여부</li>
+            <li>• <strong>Cover</strong> (files): 썸네일 이미지</li>
+          </ul>
+        </div>
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .back-button {
+    display: inline-flex;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    border: 2px solid var(--color-border);
+    background-color: var(--color-background);
+    transition: all 0.1s;
+    box-shadow: var(--shadow-brutal);
+  }
+
+  .back-button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-brutal-md);
+  }
+
+  .slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUp 0.5s ease-out forwards;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes slideUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
