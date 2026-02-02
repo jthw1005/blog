@@ -11,7 +11,7 @@ interface Props {
 
 const { headings } = Astro.props;
 
-const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const filteredHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
 {filteredHeadings.length > 0 && (
@@ -75,17 +75,16 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     if (headingElements.length === 0) return;
 
     function highlightCurrentHeading() {
-      // 현재 스크롤 위치 (상단에서 약간의 여유 추가)
-      const scrollTop = window.scrollY;
-      
-      // 현재 위치보다 위에 있는 헤딩 중 가장 아래에 있는 것 찾기
+      // 뷰포트 상단에서 이 거리 이내에 있으면 "현재 보고 있는" 헤딩으로 간주
+      const threshold = 50;
+
       let currentHeading: HTMLElement | null = null;
-      
+
       for (const heading of headingElements) {
-        if (heading.offsetTop <= scrollTop) {
+        const rect = heading.getBoundingClientRect();
+        // 헤딩이 뷰포트 상단 threshold 이내에 있거나 이미 지나갔으면
+        if (rect.top <= threshold) {
           currentHeading = heading;
-        } else {
-          break;
         }
       }
       

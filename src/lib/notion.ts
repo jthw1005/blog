@@ -1,7 +1,11 @@
 import { Client } from '@notionhq/client';
 import { NotionToMarkdown } from 'notion-to-md';
 import { marked } from 'marked';
+import { gfmHeadingId } from 'marked-gfm-heading-id';
 import type { NotionPageProperties, NotionPost, Author } from '../types';
+
+// marked에 헤딩 ID 자동 생성 플러그인 적용
+marked.use(gfmHeadingId());
 import type { RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
